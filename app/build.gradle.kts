@@ -41,6 +41,19 @@ android {
 }
 
 dependencies {
+    // Kotest
+    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
+    testImplementation("io.kotest:koetst-assertions-core:5.8.0")
+
+    // JUnit 5
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    // MockK
+    testImplementation("io.mockk:mockk:1.13.10")
+
+    // Compose UI Test
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.6.2")
+    debugImplementation("androidc.compose.ui:ui-test-manifest:1.6.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -67,4 +80,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Obligatorio para usar JUnit 5
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
 }
