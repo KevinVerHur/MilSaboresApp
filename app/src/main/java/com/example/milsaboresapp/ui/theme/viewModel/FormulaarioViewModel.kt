@@ -16,16 +16,8 @@ class FormulaarioViewModel(private val usuarioDAO: UsuarioDAO) : ViewModel() {
     private val _usuarioActual = MutableStateFlow<Usuario?>(null)
     val usuarioActual = _usuarioActual.asStateFlow()
 
-    fun agregarUsuario(nombre: String, correo: String, contrasena: String) {
-        viewModelScope.launch {
-            val usuario = Usuario(
-                nombre = nombre,
-                correo = correo,
-                contrasena = contrasena
-            )
-            usuarioDAO.insertarUsuario(usuario)
-            cargarUsuarios()
-        }
+    init {
+        cargarUsuarios()
     }
 
     fun cargarUsuarios() {
@@ -38,6 +30,35 @@ class FormulaarioViewModel(private val usuarioDAO: UsuarioDAO) : ViewModel() {
         viewModelScope.launch {
             val usuario = usuarioDAO.obtenerUsuarioPorCorreo(correo)
             _usuarioActual.value = usuario
+        }
+    }
+
+    fun cargarUsuarioPorId(id: Int) {
+        viewModelScope.launch {
+            val usuario = usuarioDAO.obtenerUsuarioPorId(id)
+            _usuarioActual.value = usuario
+        }
+    }
+
+    fun agregarUsuario(nombre: String, correo: String, contrasena: String, esAdmin: Boolean = false) {
+        viewModelScope.launch {
+            val usuario = Usuario(nombre = nombre, correo = correo, contrasena = contrasena, esAdministrador = esAdmin)
+            usuarioDAO.insertarUsuario(usuario)
+            cargarUsuarios()
+        }
+    }
+
+    fun actualizarUsuario(usuario: Usuario) {
+        viewModelScope.launch {
+            usuarioDAO.actualizarUsuario(usuario)
+            cargarUsuarios()
+        }
+    }
+
+    fun eliminarUsuario(usuario: Usuario) {
+        viewModelScope.launch {
+            usuarioDAO.eliminarUsuario(usuario)
+            cargarUsuarios()
         }
     }
 }

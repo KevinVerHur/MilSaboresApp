@@ -7,6 +7,9 @@ class RepositorioProductos(private val dao: ProductoDAO) {
     suspend fun obtenerProductos(): List<Producto> =
         dao.obtenerProductos()
 
+    suspend fun obtenerProductoPorId(id: Int): Producto? =
+        dao.obtenerProductoPorId(id)
+
     suspend fun insertarProducto(producto: Producto) =
         dao.insertarProducto(producto)
 

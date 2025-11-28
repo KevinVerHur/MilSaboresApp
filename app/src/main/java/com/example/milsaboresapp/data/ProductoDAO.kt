@@ -9,6 +9,9 @@ interface ProductoDAO {
     @Query("SELECT * FROM productos")
     suspend fun obtenerProductos(): List<Producto>
 
+    @Query("SELECT * FROM productos WHERE id = :id")
+    suspend fun obtenerProductoPorId(id: Int): Producto?
+
     @Insert
     suspend fun insertarProducto(producto: Producto)
 
