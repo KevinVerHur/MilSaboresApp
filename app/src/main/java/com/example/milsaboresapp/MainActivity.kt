@@ -20,10 +20,10 @@ import com.example.milsaboresapp.ui.splash.SplashScreen
 import com.example.milsaboresapp.ui.theme.MilsaboresappTheme
 import com.example.milsaboresapp.ui.theme.screen.LoginScreen
 import com.example.milsaboresapp.ui.theme.screen.RegistroScreen
-import com.example.milsaboresapp.ui.theme.screen.DetalleProducto
 import com.example.milsaboresapp.ui.theme.screen.PerfilUsuario
 import com.example.milsaboresapp.ui.theme.viewModel.FormulaarioViewModel
 import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
+import androidx.compose.material3.CircularProgressIndicator
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             MilsaboresappTheme {
                 FormularioApp()
-                //PantallaSelectorImagen()
             }
         }
     }
@@ -41,6 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FormularioApp() {
     val context = LocalContext.current
+
     val database = remember {
         Room.databaseBuilder(
             context,
@@ -49,7 +49,8 @@ fun FormularioApp() {
         ).fallbackToDestructiveMigration()
             .build()
     }
-    val viewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
+
+    val formularioViewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
     val navController = rememberNavController()
 
     NavHost(
@@ -58,7 +59,7 @@ fun FormularioApp() {
     ) {
         composable("splash") { SplashScreen(navController) }
         composable("login") { LoginScreen(navController, database.UsuarioDAO()) }
-        composable("registro") { RegistroScreen(viewModel, navController) }
+        composable("registro") { RegistroScreen(formularioViewModel, navController) }
         composable("catalogo") { CatalogoApp() }
     }
 }
@@ -82,8 +83,10 @@ fun CatalogoApp() {
     val formularioViewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "products") {
-
+    NavHost(
+        navController = navController,
+        startDestination = "products"
+    ) {
         composable("products") {
             DetalleProducto(
                 onProductClick = { id ->
@@ -107,9 +110,16 @@ fun CatalogoApp() {
             arguments = listOf(navArgument("productId") { type = NavType.IntType })
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getInt("productId") ?: 0
-            val product = productoViewModel.getProductById(productId)
-            if (product != null) {
-                com.example.milsaboresapp.ui.theme.screen.DetalleProducto(producto = product, onBack = { navController.popBackStack() })
+            val productos by productoViewModel.products.collectAsState()
+            val product = productos.find { it.id == productId }
+
+            if (product == null) {
+                CircularProgressIndicator()
+            } else {
+                com.example.milsaboresapp.ui.theme.screen.DetalleProducto(
+                    producto = product,
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
 
@@ -126,4 +136,3 @@ fun CatalogoApp() {
         }
     }
 }
-
