@@ -16,11 +16,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.milsaboresapp.model.Producto
+import com.example.milsaboresapp.data.EntidadProducto
 
 @Composable
 fun DetalleProducto(
-    producto: Producto,
+    producto: EntidadProducto,
     onBack: () -> Unit
 ) {
     var cantidad by remember { mutableStateOf(1) }
@@ -42,7 +42,7 @@ fun DetalleProducto(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = producto.title,
+                    text = producto.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 32.sp,
                     fontStyle = FontStyle.Italic
@@ -52,8 +52,8 @@ fun DetalleProducto(
             Spacer(modifier = Modifier.height(12.dp))
 
             Image(
-                painter = rememberAsyncImagePainter(producto.imageSrc),
-                contentDescription = producto.title,
+                painter = rememberAsyncImagePainter(producto.imagenUrl),
+                contentDescription = producto.nombre,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -71,7 +71,7 @@ fun DetalleProducto(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = producto.description,
+                text = producto.descripcion,
                 textAlign = TextAlign.Justify,
                 color = Color(0xFF707070),
                 fontSize = 21.sp
@@ -84,7 +84,7 @@ fun DetalleProducto(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = "$${producto.price}",
+                    text = "$${producto.precio}",
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Right,
                     fontSize = 21.sp,

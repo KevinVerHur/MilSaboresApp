@@ -19,12 +19,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.milsaboresapp.data.EntidadProducto
 
-import com.example.milsaboresapp.model.Producto
 
 @Composable
 fun CartaProducto(
-    producto: Producto,
+    producto: EntidadProducto,
     onClick: () -> Unit
 ) {
     Card(
@@ -45,8 +45,8 @@ fun CartaProducto(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = producto.imageSrc),
-                contentDescription = producto.title,
+                painter = rememberAsyncImagePainter(model = producto.imagenUrl),
+                contentDescription = producto.nombre,
                 modifier = Modifier
                     .height(180.dp)
                     .fillMaxWidth()
@@ -62,7 +62,7 @@ fun CartaProducto(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = producto.title,
+                text = producto.nombre,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 fontStyle = FontStyle.Italic
@@ -71,7 +71,7 @@ fun CartaProducto(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = producto.description,
+                text = producto.descripcion,
                 textAlign = TextAlign.Justify,
                 color = Color(0xFF707070),
                 fontSize = 16.sp
@@ -84,7 +84,7 @@ fun CartaProducto(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = "$${producto.price}",
+                    text = "$${producto.precio}",
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Right,
                     fontSize = 14.sp,

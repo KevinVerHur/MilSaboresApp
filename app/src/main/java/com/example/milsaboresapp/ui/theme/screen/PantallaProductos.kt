@@ -30,7 +30,7 @@ fun DetalleProducto(
     viewModel: ProductoViewModel = viewModel()
 ) {
     val productos by viewModel.products.collectAsState()
-    val categories = listOf("all") + productos.map { it.category }.distinct()
+    val categories = listOf("all") + productos.map { it.categoria }.distinct()
     var selectedCategory by remember { mutableStateOf("all") }
 
     Column(

@@ -4,11 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.milsaboresapp.model.Usuario
 
-@Database(entities = [Usuario::class], version = 2)
-abstract class UsuarioDatabase : RoomDatabase() {
+@Database(entities = [Usuario::class, EntidadProducto::class], version = 3)
+abstract class AppDatabase : RoomDatabase() {
 
     abstract fun  UsuarioDAO(): UsuarioDAO
-
-
+    abstract fun ProductoDAO(): ProductoDAO
 
 }

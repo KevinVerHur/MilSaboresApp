@@ -1,24 +1,23 @@
 package com.example.milsaboresapp.ui.theme.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.milsaboresapp.data.RepositorioProducto
+import com.example.milsaboresapp.data.EntidadProducto
+import com.example.milsaboresapp.data.RepositorioProductos
 
-import com.example.milsaboresapp.model.Producto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.collections.filter
 import kotlin.collections.find
 
-class ProductoViewModel : ViewModel() {
+class ProductoViewModel(
+    private val repositorioProductos: RepositorioProductos
+) : ViewModel() {
 
-    private val repositorio = RepositorioProducto()
+    private val _products = MutableStateFlow<List< EntidadProducto>>(emptyList())
+    val products: StateFlow<List<EntidadProducto>> = _products
 
-    private val _products = MutableStateFlow<List<Producto>>(emptyList())
-    val products: StateFlow<List<Producto>> = _products
-
-    private val _selectedCategory = MutableStateFlow("all")
-    val selectedCategory: StateFlow<String> = _selectedCategory
+    private var productosOriginales = emptyList<EntidadProducto>()
 
     init {
         cargarProductos()
@@ -26,20 +25,17 @@ class ProductoViewModel : ViewModel() {
 
     fun cargarProductos() {
         viewModelScope.launch {
-            _products.value = repositorio.obtenerProductos()
+            productosOriginales = repositorioProductos.obtenerProductos()
+            _products.value = productosOriginales
         }
     }
 
     fun filterByCategory(category: String) {
-        _selectedCategory.value = category
-        _products.value = if (category == "all") {
-            repositorio.obtenerProductos()
-        } else {
-            repositorio.obtenerProductos().filter { it.category == category }
-        }
+        _products.value = if (category == "all") productosOriginales
+        else productosOriginales.filter { it.categoria == category }
     }
 
-    fun getProductById(id: Int): Producto? {
-        return repositorio.obtenerProductos().find { it.id == id }
+    fun getProductById(id: Int): EntidadProducto? {
+        return productosOriginales.find { it.id == id }
     }
 }

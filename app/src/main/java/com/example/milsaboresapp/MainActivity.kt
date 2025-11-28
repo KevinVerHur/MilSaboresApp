@@ -13,14 +13,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.room.Room
-import com.example.milsaboresapp.data.UsuarioDatabase
+import com.example.milsaboresapp.data.AppDatabase
+import com.example.milsaboresapp.data.RepositorioProductos
 import com.example.milsaboresapp.ui.screens.DetalleProducto
 import com.example.milsaboresapp.ui.splash.SplashScreen
 import com.example.milsaboresapp.ui.theme.MilsaboresappTheme
 import com.example.milsaboresapp.ui.theme.screen.LoginScreen
 import com.example.milsaboresapp.ui.theme.screen.RegistroScreen
 import com.example.milsaboresapp.ui.theme.screen.DetalleProducto
-import com.example.milsaboresapp.ui.theme.screen.PantallaSelectorImagen
 import com.example.milsaboresapp.ui.theme.screen.PerfilUsuario
 import com.example.milsaboresapp.ui.theme.viewModel.FormulaarioViewModel
 import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
@@ -44,7 +44,7 @@ fun FormularioApp() {
     val database = remember {
         Room.databaseBuilder(
             context,
-            UsuarioDatabase::class.java,
+            AppDatabase::class.java,
             "usuario.db"
         ).fallbackToDestructiveMigration()
             .build()
@@ -64,21 +64,26 @@ fun FormularioApp() {
 }
 
 @Composable
-fun CatalogoApp(viewModel: ProductoViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun CatalogoApp() {
     val context = LocalContext.current
 
     val database = remember {
         Room.databaseBuilder(
             context,
-            UsuarioDatabase::class.java,
+            AppDatabase::class.java,
             "usuario.db"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
+
+    val repositorio = remember { RepositorioProductos(database.ProductoDAO()) }
+    val productoViewModel = remember { ProductoViewModel(repositorio) }
 
     val formularioViewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "products") {
+
         composable("products") {
             DetalleProducto(
                 onProductClick = { id ->
@@ -93,7 +98,7 @@ fun CatalogoApp(viewModel: ProductoViewModel = androidx.lifecycle.viewmodel.comp
                         navController.navigate("perfil")
                     }
                 },
-                viewModel = viewModel
+                viewModel = productoViewModel
             )
         }
 
@@ -102,9 +107,9 @@ fun CatalogoApp(viewModel: ProductoViewModel = androidx.lifecycle.viewmodel.comp
             arguments = listOf(navArgument("productId") { type = NavType.IntType })
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getInt("productId") ?: 0
-            val product = viewModel.getProductById(productId)
+            val product = productoViewModel.getProductById(productId)
             if (product != null) {
-                DetalleProducto(producto = product, onBack = { navController.popBackStack() })
+                com.example.milsaboresapp.ui.theme.screen.DetalleProducto(producto = product, onBack = { navController.popBackStack() })
             }
         }
 
@@ -121,3 +126,4 @@ fun CatalogoApp(viewModel: ProductoViewModel = androidx.lifecycle.viewmodel.comp
         }
     }
 }
+
