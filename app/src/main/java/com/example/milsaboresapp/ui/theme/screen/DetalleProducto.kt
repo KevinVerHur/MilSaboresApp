@@ -16,11 +16,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.milsaboresapp.data.EntidadProducto
+import com.example.milsaboresapp.model.Producto
 
 @Composable
 fun DetalleProducto(
-    producto: EntidadProducto,
+    producto: Producto,
     onBack: () -> Unit
 ) {
     var cantidad by remember { mutableStateOf(1) }

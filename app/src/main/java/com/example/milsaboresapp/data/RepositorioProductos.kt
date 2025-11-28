@@ -1,16 +1,18 @@
 package com.example.milsaboresapp.data
 
+import com.example.milsaboresapp.model.Producto
+
 class RepositorioProductos(private val dao: ProductoDAO) {
 
-    suspend fun obtenerProductos(): List<EntidadProducto> =
+    suspend fun obtenerProductos(): List<Producto> =
         dao.obtenerProductos()
 
-    suspend fun insertarProducto(producto: EntidadProducto) =
+    suspend fun insertarProducto(producto: Producto) =
         dao.insertarProducto(producto)
 
-    suspend fun actualizarProducto(producto: EntidadProducto) =
+    suspend fun actualizarProducto(producto: Producto) =
         dao.actualizarProducto(producto)
 
-    suspend fun eliminarProducto(producto: EntidadProducto) =
+    suspend fun eliminarProducto(producto: Producto) =
         dao.eliminarProducto(producto)
 }

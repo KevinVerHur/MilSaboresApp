@@ -1,19 +1,20 @@
 package com.example.milsaboresapp.data
 
 import androidx.room.*
+import com.example.milsaboresapp.model.Producto
 
 @Dao
 interface ProductoDAO {
 
     @Query("SELECT * FROM productos")
-    suspend fun obtenerProductos(): List<EntidadProducto>
+    suspend fun obtenerProductos(): List<Producto>
 
     @Insert
-    suspend fun insertarProducto(producto: EntidadProducto)
+    suspend fun insertarProducto(producto: Producto)
 
     @Update
-    suspend fun actualizarProducto(producto: EntidadProducto)
+    suspend fun actualizarProducto(producto: Producto)
 
     @Delete
-    suspend fun eliminarProducto(producto: EntidadProducto)
+    suspend fun eliminarProducto(producto: Producto)
 }
