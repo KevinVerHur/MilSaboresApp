@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FormulaarioViewModel(private val usuarioDAO: UsuarioDAO) : ViewModel() {
+
     private val _usuarios = MutableStateFlow<List<Usuario>>(emptyList())
     val usuarios = _usuarios.asStateFlow()
 
@@ -17,8 +18,12 @@ class FormulaarioViewModel(private val usuarioDAO: UsuarioDAO) : ViewModel() {
 
     fun agregarUsuario(nombre: String, correo: String, contrasena: String) {
         viewModelScope.launch {
-            val usuario = Usuario(nombre = nombre, correo = correo, contrasena = contrasena)
-            usuarioDAO.insertar(usuario)
+            val usuario = Usuario(
+                nombre = nombre,
+                correo = correo,
+                contrasena = contrasena
+            )
+            usuarioDAO.insertarUsuario(usuario)
             cargarUsuarios()
         }
     }
@@ -31,9 +36,8 @@ class FormulaarioViewModel(private val usuarioDAO: UsuarioDAO) : ViewModel() {
 
     fun cargarUsuarioPorCorreo(correo: String) {
         viewModelScope.launch {
-            val usuarios = usuarioDAO.obtenerUsuarios()
-            val encontrado = usuarios.find { it.correo == correo }
-            _usuarioActual.value = encontrado
+            val usuario = usuarioDAO.obtenerUsuarioPorCorreo(correo)
+            _usuarioActual.value = usuario
         }
     }
 }

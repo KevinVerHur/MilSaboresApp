@@ -128,21 +128,26 @@ fun LoginScreen(navController: NavController, usuarioDAO: UsuarioDAO) {
 
                 if (!correoError && !correoFormatoError && !contrasenaError) {
                     scope.launch {
-                        val usuarios = usuarioDAO.obtenerUsuarios()
-                        val usuarioEncontrado = usuarios.find {
-                            it.correo == correo && it.contrasena == contrasena
-                        }
+                        val usuario = usuarioDAO.obtenerUsuarioPorCorreo(correo)
 
-                        if (usuarioEncontrado != null) {
+                        if (usuario != null && usuario.contrasena == contrasena) {
+
                             val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                             val editor = sharedPreferences.edit()
-                            editor.putString("correo_usuario", usuarioEncontrado.correo)
+                            editor.putString("correo_usuario", usuario.correo)
                             editor.apply()
 
-                            mensajeError = null
-                            navController.navigate("catalogo") {
-                                popUpTo("login") { inclusive = true }
+                            if (usuario.esAdministrador) {
+                                navController.navigate("admin_menu") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            } else {
+                                navController.navigate("catalogo") {
+                                    popUpTo("login") { inclusive = true }
+                                }
                             }
+
+                            mensajeError = null
                         } else {
                             mensajeError = "Credenciales incorrectas"
                         }
@@ -153,6 +158,7 @@ fun LoginScreen(navController: NavController, usuarioDAO: UsuarioDAO) {
         ) {
             Text("Iniciar sesión")
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 

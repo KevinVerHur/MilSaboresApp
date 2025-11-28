@@ -24,6 +24,8 @@ import com.example.milsaboresapp.ui.theme.screen.PerfilUsuario
 import com.example.milsaboresapp.ui.theme.viewModel.FormulaarioViewModel
 import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
 import androidx.compose.material3.CircularProgressIndicator
+import com.example.milsaboresapp.model.Usuario
+import com.example.milsaboresapp.ui.theme.screen.AdminMenuScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +52,20 @@ fun FormularioApp() {
             .build()
     }
 
+    LaunchedEffect(true) {
+        val admin = database.UsuarioDAO().obtenerUsuarioPorCorreo("admin@milsabores.com")
+        if (admin == null) {
+            database.UsuarioDAO().insertarUsuario(
+                Usuario(
+                    nombre = "Admin",
+                    correo = "admin@milsabores.com",
+                    contrasena = "123456",
+                    esAdministrador = true
+                )
+            )
+        }
+    }
+
     val formularioViewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
     val navController = rememberNavController()
 
@@ -61,8 +77,11 @@ fun FormularioApp() {
         composable("login") { LoginScreen(navController, database.UsuarioDAO()) }
         composable("registro") { RegistroScreen(formularioViewModel, navController) }
         composable("catalogo") { CatalogoApp() }
+        composable("admin_menu") { AdminMenuScreen(onBack = { navController.popBackStack() })
+        }
     }
 }
+
 
 @Composable
 fun CatalogoApp() {
