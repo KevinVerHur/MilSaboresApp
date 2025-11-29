@@ -1,10 +1,9 @@
-package com.example.milsaboresapp.ui.screens
+package com.example.milsaboresapp.ui.screen
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -18,16 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.milsaboresapp.ui.components.CartaProducto
+import com.example.milsaboresapp.ui.theme.viewModel.IProductoViewModel
 import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
 
-import kotlin.collections.map
-
-
 @Composable
-fun DetalleProducto(
+fun PantallaProductos(
     onProductClick: (Int) -> Unit,
     onPerfilClick: () -> Unit,
-    viewModel: ProductoViewModel = viewModel()
+    viewModel: IProductoViewModel
 ) {
     val productos by viewModel.products.collectAsState()
     val categories = listOf("all") + productos.map { it.categoria }.distinct()
@@ -37,11 +34,10 @@ fun DetalleProducto(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF5E1))
-            .padding(20.dp ,40.dp)
+            .padding(20.dp, 40.dp)
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterStart
         ) {
             Button(
@@ -67,15 +63,13 @@ fun DetalleProducto(
             fontSize = 30.sp,
             textAlign = TextAlign.Center,
             color = Color(0xFF5D4037),
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             MenuCategoria(
@@ -92,14 +86,12 @@ fun DetalleProducto(
 
         LazyColumn {
             items(productos) { product ->
-                CartaProducto (product) {
+                CartaProducto(product) {
                     onProductClick(product.id)
                 }
             }
         }
     }
-
-
 }
 
 @Composable
@@ -119,19 +111,15 @@ fun MenuCategoria(
         ) {
             Text(if (selected == "all") "Todos" else selected)
         }
+
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .background(Color(0xFFFFF5E1))
-            ) {
+            modifier = Modifier.background(Color(0xFFFFF5E1))
+        ) {
             categories.forEach {
                 DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = if (it == "all") "Todos" else it
-                        )
-                    },
+                    text = { Text(if (it == "all") "Todos" else it) },
                     onClick = {
                         onSelect(it)
                         expanded = false

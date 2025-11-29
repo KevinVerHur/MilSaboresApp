@@ -11,10 +11,10 @@ import kotlinx.coroutines.launch
 
 class ProductoViewModel(
     private val repositorioProductos: RepositorioProductos
-) : ViewModel() {
+) : ViewModel(), IProductoViewModel {
 
     private val _products = MutableStateFlow<List<Producto>>(emptyList())
-    val products: StateFlow<List<Producto>> = _products
+    override val products: StateFlow<List<Producto>> = _products
 
     private val _productoActual = MutableStateFlow<Producto?>(null)
     val productoActual: StateFlow<Producto?> = _productoActual
@@ -141,7 +141,7 @@ class ProductoViewModel(
         }
     }
 
-    fun filterByCategory(category: String) {
+    override fun filterByCategory(category: String) {
         _products.value = if (category == "all") productosOriginales
         else productosOriginales.filter { it.categoria == category }
     }

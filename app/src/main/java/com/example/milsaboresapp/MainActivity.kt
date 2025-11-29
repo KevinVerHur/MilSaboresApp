@@ -15,7 +15,7 @@ import androidx.navigation.navArgument
 import androidx.room.Room
 import com.example.milsaboresapp.data.AppDatabase
 import com.example.milsaboresapp.data.RepositorioProductos
-import com.example.milsaboresapp.ui.screens.DetalleProducto
+import com.example.milsaboresapp.ui.screen.PantallaProductos
 import com.example.milsaboresapp.ui.splash.SplashScreen
 import com.example.milsaboresapp.ui.theme.MilsaboresappTheme
 import com.example.milsaboresapp.ui.theme.screen.LoginScreen
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
             if (admin == null) {
                 dao.insertarUsuario(
                     Usuario(
-                        nombre = "Administrador",
+                        nombre = "Admin",
                         correo = "admin@milsabores.com",
                         contrasena = "123456",
                         esAdministrador = true
@@ -113,22 +113,18 @@ fun FormularioApp() {
             CatalogoApp()
         }
 
-        // ✔ Menú administrador
         composable("admin_menu") {
             AdminMenuScreen(navController)
         }
 
-        // ✔ LISTA de productos
         composable("admin_productos") {
             ListaProductosAdminScreen(navController, productoViewModel)
         }
 
-        // ✔ CREAR producto
         composable("crear_producto") {
             CrearProductoScreen(navController, productoViewModel)
         }
 
-        // ✔ EDITAR producto
         composable(
             "editar_producto/{id}",
             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -137,7 +133,6 @@ fun FormularioApp() {
             EditarProductoScreen(navController, id, productoViewModel)
         }
 
-        // ✔ GESTION USUARIOS
         composable("admin_usuarios") {
             ListaUsuariosScreen(navController, formularioViewModel)
         }
@@ -178,7 +173,7 @@ fun CatalogoApp() {
         startDestination = "products"
     ) {
         composable("products") {
-            DetalleProducto(
+            PantallaProductos(
                 onProductClick = { id ->
                     navController.navigate("productDetail/$id")
                 },
