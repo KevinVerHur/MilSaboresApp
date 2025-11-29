@@ -15,14 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.milsaboresapp.ui.components.CartaProducto
 import com.example.milsaboresapp.ui.theme.viewModel.IProductoViewModel
-import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
 
 @Composable
 fun PantallaProductos(
     onProductClick: (Int) -> Unit,
+    onCerrarSesionClick: () -> Unit,
+    onPremiumProductsClick: () -> Unit,
     onPerfilClick: () -> Unit,
     viewModel: IProductoViewModel
 ) {
@@ -34,23 +34,34 @@ fun PantallaProductos(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF5E1))
-            .padding(20.dp, 40.dp)
+            .padding(20.dp, 30.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterStart
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+
             Button(
-                onClick = { onPerfilClick() },
+                onClick = onCerrarSesionClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF917970),
                     contentColor = Color.White
                 )
             ) {
+                Text("Cerrar sesión")
+            }
+
+            IconButton(
+                onClick = onPerfilClick
+            ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Perfil",
-                    modifier = Modifier.size(20.dp)
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(30.dp)
                 )
             }
         }
@@ -66,12 +77,24 @@ fun PantallaProductos(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Box(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+
+            Button(
+                onClick = onPremiumProductsClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF917970),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Productos Premium")
+            }
+
             MenuCategoria(
                 categories = categories,
                 selected = selectedCategory,
@@ -82,7 +105,7 @@ fun PantallaProductos(
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         LazyColumn {
             items(productos) { product ->
@@ -101,6 +124,7 @@ fun MenuCategoria(
     onSelect: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+
     Box {
         Button(
             onClick = { expanded = true },
@@ -117,11 +141,11 @@ fun MenuCategoria(
             onDismissRequest = { expanded = false },
             modifier = Modifier.background(Color(0xFFFFF5E1))
         ) {
-            categories.forEach {
+            categories.forEach { cat ->
                 DropdownMenuItem(
-                    text = { Text(if (it == "all") "Todos" else it) },
+                    text = { Text(if (cat == "all") "Todos" else cat) },
                     onClick = {
-                        onSelect(it)
+                        onSelect(cat)
                         expanded = false
                     }
                 )
