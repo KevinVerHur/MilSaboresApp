@@ -47,7 +47,6 @@ fun PerfilUsuario(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Launcher para seleccionar imagen de galería
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -60,6 +59,7 @@ fun PerfilUsuario(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF5E1))
+            .padding(top = 25.dp)
     ) {
         Column(
             modifier = Modifier
@@ -67,7 +67,6 @@ fun PerfilUsuario(
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp)
         ) {
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -89,7 +88,6 @@ fun PerfilUsuario(
                 IconButton(
                     onClick = {
                         if (modoEdicion) {
-                            // Cancelar: restaurar valores originales
                             nombre = usuario.nombre
                             correo = usuario.correo
                             contrasena = usuario.contrasena
@@ -111,7 +109,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Foto de perfil
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -165,7 +162,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Nombre
             CampoPerfil(
                 icono = Icons.Default.Person,
                 etiqueta = "Nombre",
@@ -176,7 +172,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Correo
             CampoPerfil(
                 icono = Icons.Default.Email,
                 etiqueta = "Correo",
@@ -187,7 +182,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Contraseña
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -235,7 +229,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Teléfono (campo adicional opcional)
             CampoPerfil(
                 icono = Icons.Default.Phone,
                 etiqueta = "Teléfono (opcional)",
@@ -246,7 +239,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Dirección (campo adicional opcional)
             CampoPerfil(
                 icono = Icons.Default.LocationOn,
                 etiqueta = "Dirección (opcional)",
@@ -257,7 +249,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Descripción (campo adicional opcional)
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -298,7 +289,6 @@ fun PerfilUsuario(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón guardar
             if (modoEdicion) {
                 Button(
                     onClick = {

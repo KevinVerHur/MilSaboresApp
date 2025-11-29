@@ -51,7 +51,7 @@ class FormulaarioViewModel(private val usuarioDAO: UsuarioDAO) : ViewModel() {
     fun actualizarUsuario(usuario: Usuario) {
         viewModelScope.launch {
             usuarioDAO.actualizarUsuario(usuario)
-            cargarUsuarios()
+            cargarUsuarioPorCorreo(usuario.correo)
         }
     }
 

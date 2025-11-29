@@ -24,6 +24,7 @@ import com.example.milsaboresapp.ui.theme.screen.PerfilUsuario
 import com.example.milsaboresapp.ui.theme.viewModel.FormulaarioViewModel
 import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.navigation.NavHostController
 import com.example.milsaboresapp.model.Usuario
 import com.example.milsaboresapp.ui.theme.screen.CrearProductoScreen
 import com.example.milsaboresapp.ui.theme.screen.EditarProductoScreen
@@ -55,7 +56,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
     private fun crearAdminSiNoExiste(database: AppDatabase) {
         CoroutineScope(Dispatchers.IO).launch {
             val dao = database.UsuarioDAO()
@@ -99,7 +99,9 @@ fun FormularioApp() {
         navController = navController,
         startDestination = "splash"
     ) {
-        composable("splash") { SplashScreen(navController) }
+        composable("splash") {
+            SplashScreen(navController)
+        }
 
         composable("login") {
             LoginScreen(navController, database.UsuarioDAO())
@@ -110,7 +112,44 @@ fun FormularioApp() {
         }
 
         composable("catalogo") {
-            CatalogoApp()
+            CatalogoApp(
+                navController = navController,
+                productoViewModel = productoViewModel,
+                formularioViewModel = formularioViewModel
+            )
+        }
+
+        composable(
+            "productDetail/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("productId") ?: 0
+            val productos by productoViewModel.products.collectAsState()
+            val producto = productos.find { it.id == id }
+
+            if (producto == null) {
+                CircularProgressIndicator()
+            } else {
+                com.example.milsaboresapp.ui.theme.screen.DetalleProducto(
+                    producto = producto,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable("perfil") {
+            val usuario by formularioViewModel.usuarioActual.collectAsState()
+
+            usuario?.let { user ->
+                PerfilUsuario(
+                    usuario = user,
+                    onActualizarUsuario = { actualizado ->
+                        formularioViewModel.actualizarUsuario(actualizado)
+                        formularioViewModel.cargarUsuarioPorCorreo(actualizado.correo)
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
 
         composable("admin_menu") {
@@ -149,75 +188,29 @@ fun FormularioApp() {
 
 
 
+
 @Composable
-fun CatalogoApp() {
+fun CatalogoApp(
+    navController: NavHostController,
+    productoViewModel: ProductoViewModel,
+    formularioViewModel: FormulaarioViewModel
+) {
     val context = LocalContext.current
 
-    val database = remember {
-        Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "usuario.db"
-        ).fallbackToDestructiveMigration()
-            .build()
-    }
+    PantallaProductos(
+        onProductClick = { id ->
+            navController.navigate("productDetail/$id")
+        },
+        onPerfilClick = {
+            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val correoGuardado = sharedPreferences.getString("correo_usuario", null)
 
-    val repositorio = remember { RepositorioProductos(database.ProductoDAO()) }
-    val productoViewModel = remember { ProductoViewModel(repositorio) }
-
-    val formularioViewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
-    val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = "products"
-    ) {
-        composable("products") {
-            PantallaProductos(
-                onProductClick = { id ->
-                    navController.navigate("productDetail/$id")
-                },
-                onPerfilClick = {
-                    val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                    val correoGuardado = sharedPreferences.getString("correo_usuario", null)
-
-                    if (correoGuardado != null) {
-                        formularioViewModel.cargarUsuarioPorCorreo(correoGuardado)
-                        navController.navigate("perfil")
-                    }
-                },
-                viewModel = productoViewModel
-            )
-        }
-
-        composable(
-            "productDetail/{productId}",
-            arguments = listOf(navArgument("productId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getInt("productId") ?: 0
-            val productos by productoViewModel.products.collectAsState()
-            val product = productos.find { it.id == productId }
-
-            if (product == null) {
-                CircularProgressIndicator()
-            } else {
-                com.example.milsaboresapp.ui.theme.screen.DetalleProducto(
-                    producto = product,
-                    onBack = { navController.popBackStack() }
-                )
+            if (correoGuardado != null) {
+                formularioViewModel.cargarUsuarioPorCorreo(correoGuardado)
+                navController.navigate("perfil")
             }
-        }
-
-        composable("perfil") {
-            val usuario by formularioViewModel.usuarioActual.collectAsState()
-
-            usuario?.let {
-                PerfilUsuario(
-                    usuario = it,
-                    onActualizarUsuario = { },
-                    onBack = { navController.popBackStack() }
-                )
-            }
-        }
-    }
+        },
+        viewModel = productoViewModel
+    )
 }
+

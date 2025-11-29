@@ -29,6 +29,21 @@ fun AdminMenuScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Button(
+            onClick = { navController.navigate("catalogo") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF5D4037),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Ver Productos", fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
             onClick = { navController.navigate("admin_productos") },
             modifier = Modifier
                 .fillMaxWidth()
