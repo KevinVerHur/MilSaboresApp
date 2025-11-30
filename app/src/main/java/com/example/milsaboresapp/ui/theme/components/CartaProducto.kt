@@ -64,7 +64,8 @@ fun CartaProducto(
                 text = producto.nombre,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                fontStyle = FontStyle.Italic
+                fontStyle = FontStyle.Italic,
+                color = Color(0xFF5D4037)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
