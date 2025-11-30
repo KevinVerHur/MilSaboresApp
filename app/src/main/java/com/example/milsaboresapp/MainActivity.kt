@@ -32,11 +32,12 @@ import com.example.milsaboresapp.ui.theme.screen.admin.ListaUsuariosScreen
 import com.example.milsaboresapp.model.Usuario
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.core.content.edit
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-
 import com.example.milsaboresapp.data.repositories.MealRepository
 import com.example.milsaboresapp.di.RetrofitInstance
 import com.example.milsaboresapp.ui.screen.PremiumProductsScreen
+import com.example.milsaboresapp.ui.theme.screen.admin.CrearUsuarioScreen
 import com.example.milsaboresapp.ui.theme.viewModel.PremiumProductsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,10 +94,7 @@ fun FormularioApp() {
     }
 
     val formularioViewModel = remember { FormulaarioViewModel(database.UsuarioDAO()) }
-    val productoViewModel = remember {
-        ProductoViewModel(RepositorioProductos(database.ProductoDAO()))
-    }
-
+    val productoViewModel = remember { ProductoViewModel(RepositorioProductos(database.ProductoDAO())) }
     val mealRepository = remember { MealRepository(RetrofitInstance.api) }
     val premiumProductsViewModel = remember { PremiumProductsViewModel(mealRepository) }
 
@@ -116,6 +114,10 @@ fun FormularioApp() {
 
         composable("registro") {
             RegistroScreen(formularioViewModel, navController)
+        }
+
+        composable("crear_usuario") {
+            CrearUsuarioScreen(navController, formularioViewModel)
         }
 
         composable("catalogo") {
@@ -165,6 +167,7 @@ fun FormularioApp() {
                     formularioViewModel.cargarUsuarioPorCorreo(correo)
                 }
             }
+
             val usuario by formularioViewModel.usuarioActual.collectAsState()
 
             AdminMenuScreen(
@@ -177,7 +180,6 @@ fun FormularioApp() {
                 usuarioNombre = usuario?.nombre ?: ""
             )
         }
-
 
         composable("admin_productos") {
             ListaProductosAdminScreen(navController, productoViewModel)
@@ -229,21 +231,17 @@ fun CatalogoApp(
         onProductClick = { id ->
             navController.navigate("productDetail/$id")
         },
-
         onCerrarSesionClick = {
             context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit {
                 clear()
             }
-
             navController.navigate("login") {
                 popUpTo("catalogo") { inclusive = true }
             }
         },
-
         onPremiumProductsClick = {
             navController.navigate("premium_products")
         },
-
         onPerfilClick = {
             val prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val correo = prefs.getString("correo_usuario", null)
@@ -254,7 +252,6 @@ fun CatalogoApp(
 
             navController.navigate("perfil")
         },
-
         viewModel = productoViewModel
     )
 }
