@@ -20,13 +20,13 @@ class PantallaProductoScreenTest {
             PantallaProductos(
                 onProductClick = {},
                 onPerfilClick = {},
+                onCerrarSesionClick = {},
+                onPremiumProductsClick = {},
+                onCarritoClick = {},
                 viewModel = fakeVm
             )
         }
 
         composeTestRule.onNodeWithText("NUESTROS PRODUCTOS").assertIsDisplayed()
     }
-
-
-
 }

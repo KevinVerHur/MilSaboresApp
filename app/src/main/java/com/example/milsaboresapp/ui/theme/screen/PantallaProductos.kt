@@ -46,15 +46,30 @@ fun PantallaProductos(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onCerrarSesionClick) {
-                Icon(Icons.Default.Logout, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Logout,
+                    contentDescription = "Cerrar Sesión",
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(30.dp)
+                )
             }
 
             IconButton(onClick = onPerfilClick) {
-                Icon(Icons.Default.Person, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Perfil",
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(30.dp)
+                )
             }
 
             IconButton(onClick = onCarritoClick) {
-                Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.ShoppingCart,
+                    contentDescription = "Carrito",
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(30.dp)
+                )
             }
         }
 
