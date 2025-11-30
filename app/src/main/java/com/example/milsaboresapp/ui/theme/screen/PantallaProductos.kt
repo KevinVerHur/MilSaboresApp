@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ fun PantallaProductos(
     onCerrarSesionClick: () -> Unit,
     onPremiumProductsClick: () -> Unit,
     onPerfilClick: () -> Unit,
+    onCarritoClick: () -> Unit,
     viewModel: IProductoViewModel
 ) {
     val productos by viewModel.products.collectAsState()
@@ -44,21 +46,15 @@ fun PantallaProductos(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onCerrarSesionClick) {
-                Icon(
-                    imageVector = Icons.Default.Logout,
-                    contentDescription = "Cerrar sesión",
-                    tint = Color(0xFF5D4037),
-                    modifier = Modifier.size(30.dp)
-                )
+                Icon(Icons.Default.Logout, contentDescription = null)
             }
 
             IconButton(onClick = onPerfilClick) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Perfil",
-                    tint = Color(0xFF5D4037),
-                    modifier = Modifier.size(30.dp)
-                )
+                Icon(Icons.Default.Person, contentDescription = null)
+            }
+
+            IconButton(onClick = onCarritoClick) {
+                Icon(Icons.Default.ShoppingCart, contentDescription = null)
             }
         }
 
@@ -66,7 +62,7 @@ fun PantallaProductos(
 
         Text(
             "NUESTROS PRODUCTOS",
-            fontWeight = FontWeight(900),
+            fontWeight = FontWeight.ExtraBold,
             fontSize = 30.sp,
             textAlign = TextAlign.Center,
             color = Color(0xFF5D4037),

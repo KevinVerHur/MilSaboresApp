@@ -20,7 +20,7 @@ class PantallaProductoScreenTest {
             PantallaProductos(
                 onProductClick = {},
                 onPerfilClick = {},
-                viewModel = fakeVm   // ← AHORA FUNCIONA
+                viewModel = fakeVm
             )
         }
 

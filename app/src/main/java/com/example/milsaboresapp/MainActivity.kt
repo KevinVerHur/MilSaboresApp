@@ -1,12 +1,20 @@
 package com.example.milsaboresapp
 
+import CarritoViewModel
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.edit
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,30 +23,28 @@ import androidx.navigation.navArgument
 import androidx.room.Room
 import com.example.milsaboresapp.data.AppDatabase
 import com.example.milsaboresapp.data.RepositorioProductos
-import com.example.milsaboresapp.ui.screen.PantallaProductos
-import com.example.milsaboresapp.ui.splash.SplashScreen
-import com.example.milsaboresapp.ui.theme.MilsaboresappTheme
-import com.example.milsaboresapp.ui.theme.screen.LoginScreen
-import com.example.milsaboresapp.ui.theme.screen.RegistroScreen
-import com.example.milsaboresapp.ui.theme.screen.PerfilUsuario
-import com.example.milsaboresapp.ui.theme.viewModel.FormulaarioViewModel
-import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
-import com.example.milsaboresapp.ui.theme.screen.CrearProductoScreen
-import com.example.milsaboresapp.ui.theme.screen.EditarProductoScreen
-import com.example.milsaboresapp.ui.theme.screen.ListaProductosAdminScreen
-import com.example.milsaboresapp.ui.theme.screen.admin.AdminMenuScreen
-import com.example.milsaboresapp.ui.theme.screen.admin.EditarUsuarioScreen
-import com.example.milsaboresapp.ui.theme.screen.admin.ListaUsuariosScreen
-import com.example.milsaboresapp.model.Usuario
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.core.content.edit
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.milsaboresapp.data.repositories.MealRepository
 import com.example.milsaboresapp.di.RetrofitInstance
+import com.example.milsaboresapp.model.Usuario
+import com.example.milsaboresapp.ui.screen.PantallaProductos
 import com.example.milsaboresapp.ui.screen.PremiumProductsScreen
+import com.example.milsaboresapp.ui.splash.SplashScreen
+import com.example.milsaboresapp.ui.theme.MilsaboresappTheme
+import com.example.milsaboresapp.ui.theme.screen.CarritoScreen
+import com.example.milsaboresapp.ui.theme.screen.CrearProductoScreen
+import com.example.milsaboresapp.ui.theme.screen.DetalleProducto
+import com.example.milsaboresapp.ui.theme.screen.EditarProductoScreen
+import com.example.milsaboresapp.ui.theme.screen.ListaProductosAdminScreen
+import com.example.milsaboresapp.ui.theme.screen.LoginScreen
+import com.example.milsaboresapp.ui.theme.screen.PerfilUsuario
+import com.example.milsaboresapp.ui.theme.screen.RegistroScreen
+import com.example.milsaboresapp.ui.theme.screen.admin.AdminMenuScreen
 import com.example.milsaboresapp.ui.theme.screen.admin.CrearUsuarioScreen
+import com.example.milsaboresapp.ui.theme.screen.admin.EditarUsuarioScreen
+import com.example.milsaboresapp.ui.theme.screen.admin.ListaUsuariosScreen
+import com.example.milsaboresapp.ui.theme.viewModel.FormulaarioViewModel
 import com.example.milsaboresapp.ui.theme.viewModel.PremiumProductsViewModel
+import com.example.milsaboresapp.ui.theme.viewModel.ProductoViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -97,6 +103,7 @@ fun FormularioApp() {
     val productoViewModel = remember { ProductoViewModel(RepositorioProductos(database.ProductoDAO())) }
     val mealRepository = remember { MealRepository(RetrofitInstance.api) }
     val premiumProductsViewModel = remember { PremiumProductsViewModel(mealRepository) }
+    val carritoViewModel = remember { CarritoViewModel(database.CarritoDAO()) }
 
     val navController = rememberNavController()
 
@@ -125,7 +132,8 @@ fun FormularioApp() {
                 navController = navController,
                 productoViewModel = productoViewModel,
                 formularioViewModel = formularioViewModel,
-                premiumProductsViewModel = premiumProductsViewModel
+                premiumProductsViewModel = premiumProductsViewModel,
+                carritoViewModel = carritoViewModel
             )
         }
 
@@ -137,9 +145,24 @@ fun FormularioApp() {
             val productos by productoViewModel.products.collectAsState()
             val producto = productos.find { it.id == id }
 
-            if (producto == null) CircularProgressIndicator()
-            else com.example.milsaboresapp.ui.theme.screen.DetalleProducto(
-                producto = producto,
+            if (producto == null) {
+                CircularProgressIndicator()
+            } else {
+                DetalleProducto(
+                    producto = producto,
+                    onBack = { navController.popBackStack() },
+                    onCarritoClick = { navController.navigate("carrito") },
+                    onAgregarCarrito = { p, cantidad ->
+                        carritoViewModel.agregarProductoAlCarrito(p, cantidad)
+                        navController.navigate("carrito")
+                    }
+                )
+            }
+        }
+
+        composable("carrito") {
+            CarritoScreen(
+                viewModel = carritoViewModel,
                 onBack = { navController.popBackStack() }
             )
         }
@@ -149,9 +172,9 @@ fun FormularioApp() {
             usuario?.let { user ->
                 PerfilUsuario(
                     usuario = user,
-                    onActualizarUsuario = { actualizado ->
-                        formularioViewModel.actualizarUsuario(actualizado)
-                        formularioViewModel.cargarUsuarioPorCorreo(actualizado.correo)
+                    onActualizarUsuario = {
+                        formularioViewModel.actualizarUsuario(it)
+                        formularioViewModel.cargarUsuarioPorCorreo(it.correo)
                     },
                     onBack = { navController.popBackStack() }
                 )
@@ -163,9 +186,7 @@ fun FormularioApp() {
             val correo = prefs.getString("correo_usuario", null)
 
             LaunchedEffect(correo) {
-                if (correo != null) {
-                    formularioViewModel.cargarUsuarioPorCorreo(correo)
-                }
+                if (correo != null) formularioViewModel.cargarUsuarioPorCorreo(correo)
             }
 
             val usuario by formularioViewModel.usuarioActual.collectAsState()
@@ -198,6 +219,7 @@ fun FormularioApp() {
         }
 
         composable("admin_usuarios") {
+            LaunchedEffect(Unit) { formularioViewModel.cargarUsuarios() }
             ListaUsuariosScreen(navController, formularioViewModel)
         }
 
@@ -223,7 +245,8 @@ fun CatalogoApp(
     navController: NavHostController,
     productoViewModel: ProductoViewModel,
     formularioViewModel: FormulaarioViewModel,
-    premiumProductsViewModel: PremiumProductsViewModel
+    premiumProductsViewModel: PremiumProductsViewModel,
+    carritoViewModel: CarritoViewModel
 ) {
     val context = LocalContext.current
 
@@ -245,12 +268,11 @@ fun CatalogoApp(
         onPerfilClick = {
             val prefs = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             val correo = prefs.getString("correo_usuario", null)
-
-            if (correo != null) {
-                formularioViewModel.cargarUsuarioPorCorreo(correo)
-            }
-
+            if (correo != null) formularioViewModel.cargarUsuarioPorCorreo(correo)
             navController.navigate("perfil")
+        },
+        onCarritoClick = {
+            navController.navigate("carrito")
         },
         viewModel = productoViewModel
     )

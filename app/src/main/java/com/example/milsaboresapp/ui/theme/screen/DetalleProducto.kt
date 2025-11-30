@@ -1,8 +1,11 @@
 package com.example.milsaboresapp.ui.theme.screen
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +24,9 @@ import com.example.milsaboresapp.model.Producto
 @Composable
 fun DetalleProducto(
     producto: Producto,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCarritoClick: () -> Unit,
+    onAgregarCarrito: (Producto, Int) -> Unit
 ) {
     var cantidad by remember { mutableStateOf(1) }
 
@@ -31,12 +36,22 @@ fun DetalleProducto(
             .background(Color(0xFFFFF5E1))
             .padding(20.dp, 40.dp)
     ) {
+
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
+
+            Box(
+                Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(onClick = onCarritoClick) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = Color.Black)
+                }
+            }
+
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -58,13 +73,7 @@ fun DetalleProducto(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .clip(
-                        shape = RoundedCornerShape(
-                            topStart = 15.dp,
-                            topEnd = 15.dp,
-                            bottomStart = 15.dp,
-                            bottomEnd = 15.dp
-                        )
+                    .clip(RoundedCornerShape(15.dp)
                     )
             )
 
@@ -104,13 +113,14 @@ fun DetalleProducto(
                         contentColor = Color.White
                     )
                 ) { Text("-") }
+
                 Text(
                     text = "$cantidad",
                     fontWeight = FontWeight.Bold,
                     fontSize = 21.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
+
                 Button(
                     onClick = { cantidad++ },
                     colors = ButtonDefaults.buttonColors(
@@ -126,6 +136,7 @@ fun DetalleProducto(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
+
                 Button(
                     onClick = onBack,
                     colors = ButtonDefaults.buttonColors(
@@ -133,8 +144,9 @@ fun DetalleProducto(
                         contentColor = Color.White
                     )
                 ) { Text("Volver") }
+
                 Button(
-                    onClick = { },
+                    onClick = { onAgregarCarrito(producto, cantidad) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF917970),
                         contentColor = Color.White

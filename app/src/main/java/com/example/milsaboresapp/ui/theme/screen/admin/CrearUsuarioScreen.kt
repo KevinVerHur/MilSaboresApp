@@ -33,7 +33,7 @@ fun CrearUsuarioScreen(navController: NavController, viewModel: FormulaarioViewM
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFFF5E1))
-            .padding(20.dp)
+            .padding(30.dp)
     ) {
 
         IconButton(
