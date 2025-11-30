@@ -50,9 +50,7 @@ fun PerfilUsuario(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            imagenPerfil = it.toString()
-        }
+        uri?.let { imagenPerfil = it.toString() }
     }
 
     Box(
@@ -79,12 +77,14 @@ fun PerfilUsuario(
                         tint = Color(0xFF917970)
                     )
                 }
+
                 Text(
                     text = "Mi Perfil",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF917970)
                 )
+
                 IconButton(
                     onClick = {
                         if (modoEdicion) {
@@ -101,7 +101,7 @@ fun PerfilUsuario(
                 ) {
                     Icon(
                         imageVector = if (modoEdicion) Icons.Default.Close else Icons.Default.Edit,
-                        contentDescription = if (modoEdicion) "Cancelar" else "Editar",
+                        contentDescription = null,
                         tint = Color(0xFF917970)
                     )
                 }
@@ -129,14 +129,14 @@ fun PerfilUsuario(
                     if (imagenPerfil.isNotEmpty()) {
                         Image(
                             painter = rememberAsyncImagePainter(imagenPerfil),
-                            contentDescription = "Foto de perfil",
+                            contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = "Sin foto",
+                            contentDescription = null,
                             modifier = Modifier.size(80.dp),
                             tint = Color(0xFF917970)
                         )
@@ -151,7 +151,7 @@ fun PerfilUsuario(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AddAPhoto,
-                                contentDescription = "Cambiar foto",
+                                contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(40.dp)
                             )
@@ -189,7 +189,7 @@ fun PerfilUsuario(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Lock,
-                        contentDescription = "Contraseña",
+                        contentDescription = null,
                         tint = Color(0xFF917970),
                         modifier = Modifier.size(24.dp)
                     )
@@ -218,7 +218,7 @@ fun PerfilUsuario(
                         IconButton(onClick = { mostrarContrasena = !mostrarContrasena }) {
                             Icon(
                                 imageVector = if (mostrarContrasena) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (mostrarContrasena) "Ocultar" else "Mostrar",
+                                contentDescription = null,
                                 tint = Color(0xFF917970)
                             )
                         }
@@ -256,7 +256,7 @@ fun PerfilUsuario(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = "Descripción",
+                        contentDescription = null,
                         tint = Color(0xFF917970),
                         modifier = Modifier.size(24.dp)
                     )
@@ -282,7 +282,6 @@ fun PerfilUsuario(
                         disabledBorderColor = Color(0xFFE8DDD4),
                         disabledTextColor = Color.Black
                     ),
-                    placeholder = { Text("Cuéntanos algo sobre ti...") },
                     maxLines = 5
                 )
             }
@@ -314,7 +313,7 @@ fun PerfilUsuario(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Guardar",
+                        contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -353,7 +352,7 @@ private fun CampoPerfil(
         ) {
             Icon(
                 imageVector = icono,
-                contentDescription = etiqueta,
+                contentDescription = null,
                 tint = Color(0xFF917970),
                 modifier = Modifier.size(24.dp)
             )

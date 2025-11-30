@@ -38,7 +38,6 @@ import com.example.milsaboresapp.data.repositories.MealRepository
 import com.example.milsaboresapp.di.RetrofitInstance
 import com.example.milsaboresapp.ui.screen.PremiumProductsScreen
 import com.example.milsaboresapp.ui.theme.viewModel.PremiumProductsViewModel
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,7 +69,7 @@ class MainActivity : ComponentActivity() {
             if (admin == null) {
                 dao.insertarUsuario(
                     Usuario(
-                        nombre = "Admin",
+                        nombre = "Admin Mil Sabores",
                         correo = "admin@milsabores.com",
                         contrasena = "123456",
                         esAdministrador = true
@@ -80,7 +79,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Composable
 fun FormularioApp() {
@@ -103,7 +101,6 @@ fun FormularioApp() {
     val premiumProductsViewModel = remember { PremiumProductsViewModel(mealRepository) }
 
     val navController = rememberNavController()
-
 
     NavHost(
         navController = navController,
@@ -160,8 +157,27 @@ fun FormularioApp() {
         }
 
         composable("admin_menu") {
-            AdminMenuScreen(navController)
+            val prefs = LocalContext.current.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val correo = prefs.getString("correo_usuario", null)
+
+            LaunchedEffect(correo) {
+                if (correo != null) {
+                    formularioViewModel.cargarUsuarioPorCorreo(correo)
+                }
+            }
+            val usuario by formularioViewModel.usuarioActual.collectAsState()
+
+            AdminMenuScreen(
+                navController = navController,
+                onLoadAdminProfile = {
+                    if (correo != null) {
+                        formularioViewModel.cargarUsuarioPorCorreo(correo)
+                    }
+                },
+                usuarioNombre = usuario?.nombre ?: ""
+            )
         }
+
 
         composable("admin_productos") {
             ListaProductosAdminScreen(navController, productoViewModel)
@@ -199,7 +215,6 @@ fun FormularioApp() {
         }
     }
 }
-
 
 @Composable
 fun CatalogoApp(

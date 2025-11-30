@@ -25,8 +25,8 @@ fun ListaUsuariosScreen(navController: NavController, viewModel: FormulaarioView
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp)
             .background(Color(0xFFFFF5E1))
+            .padding(top = 30.dp)
     ) {
         Text("Usuarios Registrados", style = MaterialTheme.typography.headlineSmall)
 
@@ -36,7 +36,7 @@ fun ListaUsuariosScreen(navController: NavController, viewModel: FormulaarioView
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 6.dp, horizontal = 10.dp)
                     .clickable {
                         navController.navigate("editar_usuario/${usuario.id}")
                     }

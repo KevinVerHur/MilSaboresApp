@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,25 +39,20 @@ fun PantallaProductos(
     ) {
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Button(
-                onClick = onCerrarSesionClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF917970),
-                    contentColor = Color.White
+            IconButton(onClick = onCerrarSesionClick) {
+                Icon(
+                    imageVector = Icons.Default.Logout,
+                    contentDescription = "Cerrar sesión",
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(30.dp)
                 )
-            ) {
-                Text("Cerrar sesión")
             }
 
-            IconButton(
-                onClick = onPerfilClick
-            ) {
+            IconButton(onClick = onPerfilClick) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Perfil",
