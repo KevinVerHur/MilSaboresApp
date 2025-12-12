@@ -6,7 +6,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -29,129 +28,121 @@ fun EditarProductoScreen(
         viewModel.cargarProductoPorId(productoId)
     }
 
-    producto?.let { p ->
+    if (producto == null) return
+    val p = producto!!
 
-        var nombre by remember { mutableStateOf(p.nombre) }
-        var descripcion by remember { mutableStateOf(p.descripcion) }
-        var categoria by remember { mutableStateOf(p.categoria) }
-        var precio by remember { mutableStateOf(p.precio.toString()) }
-        var imagenUrl by remember { mutableStateOf(p.imagenUrl) }
+    var nombre by remember(productoId) { mutableStateOf(p.nombre) }
+    var descripcion by remember(productoId) { mutableStateOf(p.descripcion) }
+    var categoria by remember(productoId) { mutableStateOf(p.categoria) }
+    var precio by remember(productoId) { mutableStateOf(p.precio.toString()) }
+    var imagenUrl by remember(productoId) { mutableStateOf(p.imagenUrl) }
 
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(Color(0xFFFFF5E1))
-                .padding(top = 30.dp, start = 15.dp, end = 15.dp)
-        ) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFFF5E1))
+            .padding(20.dp)
+    ) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Volver",
-                        tint = Color(0xFF917970)
-                    )
-                }
-            }
-
-            Text(
-                "Editar Producto",
-                fontWeight = FontWeight(900),
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                color = Color(0xFF5D4037),
-                modifier = Modifier.fillMaxWidth()
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Volver",
+                tint = Color(0xFF917970)
             )
+        }
 
-            Spacer(Modifier.height(20.dp))
+        Text(
+            "Editar Producto",
+            fontWeight = FontWeight.Black,
+            fontSize = 30.sp,
+            textAlign = TextAlign.Center,
+            color = Color(0xFF5D4037),
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = { nombre = it },
-                label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        Spacer(Modifier.height(20.dp))
 
-            Spacer(Modifier.height(10.dp))
+        OutlinedTextField(
+            value = nombre,
+            onValueChange = { nombre = it },
+            label = { Text("Nombre") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            OutlinedTextField(
-                value = descripcion,
-                onValueChange = { descripcion = it },
-                label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        Spacer(Modifier.height(10.dp))
 
-            Spacer(Modifier.height(10.dp))
+        OutlinedTextField(
+            value = descripcion,
+            onValueChange = { descripcion = it },
+            label = { Text("Descripción") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            OutlinedTextField(
-                value = categoria,
-                onValueChange = { categoria = it },
-                label = { Text("Categoría") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        Spacer(Modifier.height(10.dp))
 
-            Spacer(Modifier.height(10.dp))
+        OutlinedTextField(
+            value = categoria,
+            onValueChange = { categoria = it },
+            label = { Text("Categoría") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            OutlinedTextField(
-                value = precio,
-                onValueChange = { precio = it },
-                label = { Text("Precio") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        Spacer(Modifier.height(10.dp))
 
-            Spacer(Modifier.height(10.dp))
+        OutlinedTextField(
+            value = precio,
+            onValueChange = { precio = it },
+            label = { Text("Precio") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            OutlinedTextField(
-                value = imagenUrl,
-                onValueChange = { imagenUrl = it },
-                label = { Text("Imagen URL") },
-                modifier = Modifier.fillMaxWidth()
-            )
+        Spacer(Modifier.height(14.dp))
 
-            Spacer(Modifier.height(20.dp))
+        SelectorImagenProducto(
+            imagenUrl = imagenUrl,
+            onImagenSeleccionada = { imagenUrl = it }
+        )
 
-            Button(
-                onClick = {
-                    val actualizado = Producto(
+        Spacer(Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                viewModel.actualizarProducto(
+                    Producto(
                         id = p.id,
                         nombre = nombre,
                         descripcion = descripcion,
                         categoria = categoria,
-                        precio = precio.toInt(),
+                        precio = precio.toIntOrNull() ?: p.precio,
                         imagenUrl = imagenUrl
                     )
-                    viewModel.actualizarProducto(actualizado)
-                    navController.popBackStack()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF917970),
-                    contentColor = Color.White
                 )
-            ) {
-                Text("Guardar Cambios")
-            }
+                navController.popBackStack()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF917970),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Guardar Cambios")
+        }
 
-            Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
 
-            Button(
-                onClick = {
-                    viewModel.eliminarProducto(p)
-                    navController.navigate("admin_catalogo") {
-                        popUpTo("admin_catalogo") { inclusive = true }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = Color.White
-                )
-            ) {
-                Text("Eliminar Producto")
-            }
+        Button(
+            onClick = {
+                viewModel.eliminarProducto(p)
+                navController.popBackStack()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = Color.White
+            )
+        ) {
+            Text("Eliminar Producto")
         }
     }
 }
